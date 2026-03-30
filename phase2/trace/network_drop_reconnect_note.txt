@@ -1,0 +1,25 @@
+Network Drop / Reconnect Interpretation Note
+Date: 2026-03-11
+
+Current transport model:
+- This implementation uses a Unix domain socket on the same machine.
+- It is not a remote TCP-based collaborative terminal.
+
+Interpretation:
+- Because the system is local and same-machine, "network drop / reconnect" is modeled as
+  client disconnect followed by a fresh reconnect.
+- This is the practical failure model for the current implementation.
+
+What is supported:
+- A client may disconnect.
+- The shared shell session remains alive.
+- A later reconnect succeeds as a fresh new client connection.
+- A reconnecting client receives a new client id and rejoins as an observer.
+
+What is not implemented:
+- packet-level network fault handling
+- remote transport fault injection
+- identity-preserving reconnect to the same logical client session
+
+Conclusion:
+For this project, reconnect behavior is implemented and documented in a same-machine local-socket form.

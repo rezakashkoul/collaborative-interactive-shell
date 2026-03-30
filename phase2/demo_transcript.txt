@@ -1,0 +1,109 @@
+Collaborative Interactive Shell (CIS) - Demo Transcript
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+============================================================
+SERVER TERMINAL
+============================================================
+
+$ cd /home/rkashko/os/project1
+$ rm -f cis.sock
+$ python3 cis_server.py ./cis.sock
+[CIS] shell started: pid=836514, shell=/bin/bash
+[CIS] listening on socket: ./cis.sock
+[CIS] controller granted: id=1 name=user1
+[CIS] client joined: id=1 name=user1
+[CIS] client joined: id=2 name=user2
+[CIS] request queued: id=2 name=user2 queue=[2]
+[CIS] controller released: id=1 name=user1
+[CIS] controller granted: id=2 name=user2
+
+============================================================
+CLIENT 1 TERMINAL
+============================================================
+
+$ cd /home/rkashko/os/project1
+$ python3 cis_client.py ./cis.sock
+[CIS] connected
+[CIS] your id=1, name=user1
+[CIS] shell input works only for controller
+[CIS] control commands: request release cancel who name NEWNAME kick ID
+
+[CIS] role=controller id=1 name=user1
+[CIS] controller granted to id=1 name=user1
+[CIS] client joined: id=1 name=user1
+[CIS] role=controller id=1 name=user1
+[CIS] client joined: id=2 name=user2
+
+[CIS-CLIENT] command mode: who
+[CIS] participants:
+  id=1 name=user1 role=controller controller
+  id=2 name=user2 role=observer
+[CIS] queue=[]
+
+[CIS-CLIENT] command mode: release
+[CIS] controller released: id=1 name=user1
+[CIS] role=observer id=1 name=user1
+[CIS] controller granted to id=2 name=user2
+
+============================================================
+CLIENT 2 TERMINAL
+============================================================
+
+$ cd /home/rkashko/os/project1
+$ python3 cis_client.py ./cis.sock
+[CIS] connected
+[CIS] your id=2, name=user2
+[CIS] shell input works only for controller
+[CIS] control commands: request release cancel who name NEWNAME kick ID
+
+[CIS] role=observer id=2 name=user2
+[CIS] client joined: id=2 name=user2
+
+[CIS-CLIENT] command mode: request
+[CIS] request queued: id=2 name=user2 queue=[2]
+
+[CIS] role=controller id=2 name=user2
+[CIS] controller granted to id=2 name=user2
+
+whoami
+rkashko
+
+============================================================
+DISCONNECT / PROMOTION SCENARIO
+============================================================
+
+CLIENT 2 requests control while CLIENT 1 is controller:
+
+CLIENT 2:
+[CIS-CLIENT] command mode: request
+[CIS] request queued: id=2 name=user2 queue=[2]
+
+CLIENT 1 exits:
+
+CLIENT 1:
+[CIS-CLIENT] command mode: quit
+
+CLIENT 2 observes automatic promotion:
+[CIS] client left: id=1 name=user1
+[CIS] controller disconnected: id=1 name=user1
+[CIS] role=controller id=2 name=user2
+[CIS] controller granted to id=2 name=user2
+
+CLIENT 2 verifies shell is still alive:
+whoami
+rkashko
+
+============================================================
+SUMMARY
+============================================================
+
+This demo shows:
+- host start
+- client attach
+- exactly one controller at a time
+- observer request for control
+- controller release
+- queued controller promotion
+- controller disconnect handling
+- continued shell liveness after disconnect

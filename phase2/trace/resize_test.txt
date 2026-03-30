@@ -1,0 +1,47 @@
+Scenario: controller-driven PTY resize propagation
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+Goal:
+Verify that terminal resize events are propagated from the current controller to the shared PTY,
+and verify that observer-side window resizing does not change the shared PTY size.
+
+Policy:
+- Only the current controller may resize the shared PTY.
+- Observer window resizing is local only and is not forwarded to the shared PTY.
+
+Steps:
+1. Start the server:
+   python3 cis_server.py ./cis.sock
+
+2. Connect client 1.
+   Expected: client 1 becomes controller.
+
+3. Connect client 2.
+   Expected: client 2 becomes observer.
+
+4. Resize the terminal window of client 1 several times.
+   Observe server logs.
+
+5. Resize the terminal window of client 2 several times.
+   Observe server logs and client output.
+
+Observed behavior:
+- When the controller resized its terminal window, the server logged:
+  [CIS] resize applied by id=1: rows=... cols=...
+- Multiple controller resize events successfully updated the PTY size.
+- Observer window resizing remained physically possible in the local terminal window,
+  but it did not send effective resize updates to the shared PTY.
+- After the client-side fix, observer resize no longer spammed repeated
+  "only controller may resize the shared PTY" messages.
+
+Representative output seen during the test:
+- [CIS] resize applied by id=1: rows=22 cols=89
+- [CIS] resize applied by id=1: rows=21 cols=83
+- [CIS] resize applied by id=1: rows=20 cols=85
+
+Result: PASS
+
+Notes:
+This implementation uses a controller-owned resize policy.
+That policy is intentionally simple and avoids conflicting terminal sizes from multiple observers.

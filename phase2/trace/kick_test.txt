@@ -1,0 +1,52 @@
+Scenario: kick behavior and authorization checks
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+Goal:
+Verify that the current controller can kick another connected client,
+and verify that an observer is not allowed to use the kick command.
+
+Steps:
+1. Start the server:
+   python3 cis_server.py ./cis.sock
+
+2. Connect client 1.
+   Expected: client 1 becomes controller.
+
+3. Connect client 2.
+   Expected: client 2 becomes observer.
+
+4. In client 1, enter command mode and inspect participants if needed:
+   Ctrl-T
+   who
+
+5. In client 1, kick client 2:
+   Ctrl-T
+   kick 2
+
+6. Verify that client 2 is disconnected and returns to the local shell prompt.
+
+7. Reconnect another observer client.
+
+8. In the observer client, attempt to kick the controller:
+   Ctrl-T
+   kick 1
+
+Observed behavior:
+- The controller successfully kicked the observer.
+- The server logged both "client kicked" and "client left".
+- The kicked client was disconnected and returned to its own shell prompt.
+- A non-controller client attempting to use kick received an authorization error.
+- Controller state remained stable after kicking an observer.
+
+Representative output seen during the test:
+- [CIS] client kicked: id=2 name=user2 by id=1
+- [CIS] client left: id=2 name=user2
+- [CIS] only controller may kick clients
+
+Result: PASS
+
+Notes:
+This test confirms both functionality and policy enforcement:
+kick works when issued by the controller,
+and kick is rejected when issued by an observer.

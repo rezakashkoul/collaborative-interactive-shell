@@ -1,0 +1,53 @@
+Scenario: controller disconnect with queued observer promotion
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+Goal:
+Verify that if the current controller disconnects while another client is waiting in the FIFO queue,
+the session remains alive and the next queued client becomes the new controller.
+
+Steps:
+1. Start the server:
+   python3 cis_server.py ./cis.sock
+
+2. Connect client 1.
+   Expected: client 1 becomes controller.
+
+3. Connect client 2.
+   Expected: client 2 becomes observer.
+
+4. In client 2, enter command mode and request control:
+   Ctrl-T
+   request
+
+5. In client 1, enter command mode and exit:
+   Ctrl-T
+   quit
+
+6. Observe client 2 after client 1 disconnects.
+
+7. In client 2, run:
+   whoami
+
+Observed behavior:
+- Client 2 successfully queued a control request.
+- Server detected that client 1 left.
+- Server detected that the controller disconnected.
+- Client 2 was promoted to controller automatically.
+- Client 2 successfully executed `whoami`.
+- The shared shell session remained alive after client 1 exited.
+
+Representative output seen during the test:
+- [CIS] request queued: id=2 name=user2 queue=[2]
+- [CIS] client left: id=1 name=user1
+- [CIS] controller disconnected: id=1 name=user1
+- [CIS] role=controller id=2 name=user2
+- [CIS] controller granted to id=2 name=user2
+- whoami
+- rkashko
+
+Result: PASS
+
+Notes:
+This test also confirms that the implementation supports practical reconnect/fresh rejoin semantics,
+because a disconnected controller does not destroy the shared shell session.

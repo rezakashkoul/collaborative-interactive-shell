@@ -1,0 +1,26 @@
+Detach / Reattach Policy
+Date: 2026-03-11
+
+This implementation supports clean detach and practical reconnect for local same-machine clients.
+
+Observer detach:
+- An observer may leave the session using Ctrl-C or Ctrl-T followed by quit.
+- Observer detach does not affect the running shared shell session.
+
+Controller detach:
+- A controller may leave using Ctrl-T followed by quit.
+- If the controller leaves, the shell session remains alive.
+- If a queued requester exists, the next queued client becomes controller automatically.
+- If no queued requester exists, the session remains alive with no controller assigned.
+
+Reconnect / reattach behavior:
+- Reconnect is supported as a fresh new client connection.
+- A reconnecting client receives a new client id.
+- A reconnecting client joins as an observer unless later granted control by the floor-control policy.
+- The implementation does not preserve the previous client id across reconnect.
+- The implementation does not restore controller status automatically across reconnect.
+
+Interpretation for this project:
+- Because this system is built for already-authenticated users on the same machine using a Unix domain socket,
+  reconnect is treated as local disconnect followed by a fresh reconnect.
+- Identity-preserving reattachment is not implemented in this phase.

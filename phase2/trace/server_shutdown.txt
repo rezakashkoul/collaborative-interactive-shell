@@ -1,0 +1,52 @@
+Scenario: server shutdown and cleanup
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+Goal:
+Verify that when the CIS server shuts down, it performs graceful cleanup:
+connected clients are disconnected, the Unix socket file is removed,
+and no obvious orphan server or child process remains.
+
+Steps:
+1. Start the server:
+   python3 cis_server.py ./cis.sock
+
+2. Connect client 1.
+   Expected: client 1 becomes controller.
+
+3. Connect client 2.
+   Expected: client 2 becomes observer.
+
+4. Optionally run a simple shell command to confirm the session is active:
+   pwd
+
+5. In the server terminal, press Ctrl-C.
+
+6. After shutdown, check:
+   ls -l cis.sock
+   ps -f | grep cis_server.py
+   ps -f | grep python3
+
+Observed behavior:
+- The server entered cleanup mode.
+- Connected clients were removed during cleanup.
+- Controller disconnect was handled during shutdown.
+- The socket file cis.sock was removed.
+- No obvious cis_server.py or leftover Python server process remained.
+- Client terminals returned to their normal shell prompts.
+
+Representative output seen during the test:
+- [CIS] cleanup started
+- [CIS] client left: id=1 name=user1
+- [CIS] controller disconnected: id=1 name=user1
+- [CIS] no controller currently assigned
+- [CIS] client left: id=2 name=user2
+- [CIS] cleanup finished
+- ls: cannot access 'cis.sock': No such file or directory
+
+Result: PASS
+
+Notes:
+The shutdown path is intentionally explicit: the server closes clients,
+removes the socket path, signals the shell child, reaps it, and closes the PTY.
+This behavior supports the assignment requirement of graceful cleanup without obvious orphan processes.

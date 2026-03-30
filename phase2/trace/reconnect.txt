@@ -1,0 +1,51 @@
+Scenario: observer disconnect and fresh reconnect
+Date: 2026-03-11
+Environment: /home/rkashko/os/project1 on os.cs.siue.edu
+
+Goal:
+Verify that an observer can detach from the session and later reconnect,
+and document the implementation's reconnect behavior.
+
+Steps:
+1. Start the server:
+   python3 cis_server.py ./cis.sock
+
+2. Connect client 1.
+   Expected: client 1 becomes controller.
+
+3. Connect client 2.
+   Expected: client 2 becomes observer.
+
+4. In client 2, exit the client:
+   Ctrl-C
+   or
+   Ctrl-T
+   quit
+
+5. Verify that the server detects client 2 leaving.
+
+6. Start a new client connection from another terminal:
+   python3 cis_client.py ./cis.sock
+
+7. Observe the new client state.
+
+Observed behavior:
+- The observer successfully detached from the session.
+- The server detected that the observer left.
+- A later reconnect succeeded as a fresh new client connection.
+- The reconnecting client received a new client id.
+- The reconnecting client joined as an observer.
+- The running shell session remained alive throughout.
+
+Representative output seen during the test:
+- [CIS] client left: id=2 name=user2
+- [CIS] client joined: id=3 name=user3
+- [CIS] role=observer id=3 name=user3
+
+Result: PASS
+
+Notes:
+This implementation supports practical reconnect as a fresh reconnect, not identity-preserving reattachment.
+A reconnecting client is treated as a new observer connection and receives a new client id.
+This behavior is acceptable for the current same-machine Unix-domain-socket design,
+but persistent identity remapping is not implemented in this phase.

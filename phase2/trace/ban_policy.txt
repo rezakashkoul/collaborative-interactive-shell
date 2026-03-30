@@ -1,0 +1,20 @@
+Ban Policy / Limitation Note
+Date: 2026-03-11
+
+Current status:
+- Kick is implemented.
+- Persistent ban is not implemented in this phase.
+
+Rationale:
+A correct ban mechanism requires a stable notion of participant identity across reconnects.
+The current implementation supports reconnect as a fresh new client connection with a new client id.
+Because identity-preserving reconnect is not implemented, a robust ban policy would be underspecified.
+
+What is implemented instead:
+- The current controller may remove another currently connected client using the kick command.
+- Observer clients are not allowed to use kick.
+- After kick, the removed client may reconnect later as a fresh new observer connection.
+
+Conclusion:
+For this phase, kick is implemented as the practical administrative control action.
+Persistent ban is left as future work rather than implemented incompletely.

@@ -1,0 +1,47 @@
+Robustness experiment: controller disconnect mid-command
+generated_at_utc: 2026-02-12T06:06:27.380729+00:00
+socket: ./cis.sock
+scenario:
+  1) connect as controller
+  2) start a long-ish command
+  3) disconnect controller while command still running
+expected:
+  - host stays up
+  - session continues (shell remains alive)
+  - next client can become controller
+
+2026-02-12T06:06:27.380746+00:00  controller_connect
+2026-02-12T06:06:27.380880+00:00  send_command: yes CIS_ROBUST | head -n 200000 > /dev/null; echo ROBUST_DONE
+2026-02-12T06:06:27.430981+00:00  controller_disconnect (close socket)
+
+NOTE: To validate session survival, connect from another terminal as observer/controller and run `echo STILL_ALIVE`.
+
+validation (session survival):
+  validated_at_utc: 2026-02-12T06:11:30+00:00
+  connect_cmd: nc -U ./cis.sock
+  command: echo STILL_ALIVE
+  observed_output: STILL_ALIVE
+
+
+Robustness experiment: controller disconnect mid-command (validated)
+generated_at_utc: 2026-02-12T07:28:47.770338+00:00
+socket: ./cis.sock
+scenario:
+  1) connect as controller
+  2) run: sleep 10; echo ROBUST_DONE
+  3) disconnect controller after ~1s (mid-sleep)
+  4) reconnect and verify shell still responds
+expected:
+  - host stays up
+  - command continues and ROBUST_DONE appears later
+  - session remains alive for next client
+2026-02-12T07:28:49.772873+00:00  controller_connect
+2026-02-12T07:28:49.772912+00:00  banner: [CIS] -----------------------------------------------
+2026-02-12T07:28:49.772952+00:00  send_command: sleep 10; echo ROBUST_DONE
+2026-02-12T07:28:50.773100+00:00  controller_disconnect (close socket mid-command)
+2026-02-12T07:28:54.775837+00:00  reconnect_as_controller
+2026-02-12T07:28:54.775885+00:00  banner2: [CIS] -----------------------------------------------
+2026-02-12T07:28:57.278203+00:00  validation_command: echo STILL_ALIVE
+2026-02-12T07:28:57.278245+00:00  observed_output_snippet: echo STILL_ALIVE
+2026-02-12T07:29:07.280521+00:00  observed_late_output_snippet: ROBUST_DONE
+]0;rkashko@os:~/os/project1]3008;end=cd7861c5-621d-4d75-87c8-db8b23d87c57;exit=success\]3008;start=c100ac00-d614-4301-957d-1a03531b0afe;user=rkashko;hostname=os;machineid=fcf2e812fb36

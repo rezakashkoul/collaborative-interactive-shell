@@ -1,0 +1,41 @@
+### uname -a
+Linux vm-17.cs.siue.edu 6.17.12-300.fc43.x86_64 #1 SMP PREEMPT_DYNAMIC Sat Dec 13 05:06:24 UTC 2025 x86_64 GNU/Linux
+
+### /etc/os-release
+NAME="Fedora Linux"
+VERSION="43 (Workstation Edition)"
+RELEASE_TYPE=stable
+ID=fedora
+VERSION_ID=43
+VERSION_CODENAME=""
+PRETTY_NAME="Fedora Linux 43 (Workstation Edition)"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+CPE_NAME="cpe:/o:fedoraproject:fedora:43"
+DEFAULT_HOSTNAME="fedora"
+HOME_URL="https://fedoraproject.org/"
+DOCUMENTATION_URL="https://docs.fedoraproject.org/en-US/fedora/f43/"
+SUPPORT_URL="https://ask.fedoraproject.org/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+REDHAT_BUGZILLA_PRODUCT="Fedora"
+REDHAT_BUGZILLA_PRODUCT_VERSION=43
+REDHAT_SUPPORT_PRODUCT="Fedora"
+REDHAT_SUPPORT_PRODUCT_VERSION=43
+SUPPORT_END=2026-12-02
+VARIANT="Workstation Edition"
+VARIANT_ID=workstation
+
+### bash --version
+GNU bash, version 5.3.0(1)-release (x86_64-redhat-linux-gnu)
+Copyright (C) 2025 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+
+This is free software; you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+### gcc --version
+gcc (GCC) 15.2.1 20251211 (Red Hat 15.2.1-5)
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+

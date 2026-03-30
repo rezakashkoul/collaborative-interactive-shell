@@ -1,0 +1,50 @@
+Collaborative Interactive Shell (CIS) - Postmortem
+Date: 2026-03-11
+
+1. Hardest bug and how we fixed it
+The hardest bug during Phase 2 was an interactive terminal behavior problem caused by mixing control commands and ordinary shell input too closely.
+
+In an earlier version, the server treated client input too much like line-based text. That design was enough for simple request/release testing, but it broke proper interactive shell behavior. In practice, this caused two visible problems:
+- shell input did not feel fully interactive because input handling waited too much on newline-oriented parsing
+- terminal output formatting became visibly misaligned when the client used raw mode
+
+We fixed this by separating the protocol into two distinct message types:
+- CONTROL messages for floor-control operations such as request, release, who, name, and kick
+- INPUT messages for ordinary shell bytes forwarded to the PTY
+
+This change made the implementation more correct and easier to reason about. It also aligned better with the Phase 1 feedback suggesting a simpler escape mechanism such as Ctrl-T instead of relying on raw in-band commands like /request.
+
+2. One thing we would redesign
+If we were extending this project further, the first thing we would redesign is reconnect / reattach identity handling.
+
+In the current implementation, reconnect works as a fresh reconnect:
+- a disconnected client can reconnect
+- the reconnecting client receives a new client id
+- the reconnecting client joins as an observer
+
+This behavior is functional and acceptable for the current same-machine Unix-domain-socket design, but it does not preserve client identity across reconnects. A stronger design would separate transient connection state from persistent participant identity, so that reconnecting users could reattach more cleanly without being assigned a new id.
+
+3. Fairness policy under contention
+The fairness policy is FIFO.
+
+Under contention, requests are handled in the order they are received. Each client may have at most one outstanding request at a time. This means a client cannot spam the queue by sending repeated request commands while already pending.
+
+Example:
+- Client 1 is the current controller
+- Client 2 issues request
+- Client 3 issues request
+- The queue becomes [2, 3]
+- If Client 2 issues request again, it is ignored because Client 2 already has a pending request
+- When Client 1 releases control, Client 2 becomes controller
+- When Client 2 later releases or disconnects, Client 3 becomes controller
+
+This policy is simple, predictable, and easy to explain during debugging and live demonstration.
+
+4. Additional implementation lessons
+Two smaller but important lessons came up during development:
+
+- Ctrl-C handling had to depend on role:
+  an observer should be able to exit the client, but a controller's Ctrl-C should go to the shell
+
+- Traceability matters:
+  adding clearer server-side logging made it much easier to validate disconnect, kick, and shutdown scenarios and to produce reproducible evidence for the assignment

@@ -1,0 +1,20 @@
+generated_at_utc: 2026-02-12T06:02:21+00:00
+
+HOST (run in separate terminal):
+  cd /home/rkashko/os/project1
+  python3 proto_host.py ./cis.sock
+
+LATENCY experiment:
+  cd /home/rkashko/os/project1
+  rm -f appendix/latency_raw.csv appendix/latency.txt
+  python3 run_latency.py --sock ./cis.sock --Ns 1,2,4 --trials 50 --timeout 2.0 --outdir appendix
+
+Notes:
+  - No nc/ncat clients were connected during the latency run.
+  - Same-machine authenticated users only (Unix domain socket).
+
+ROBUSTNESS experiment (validated mid-command disconnect):
+  # ensure no nc/ncat clients:
+  ps -ef | grep -E "nc -U|ncat -U" | grep -v grep
+  # run validated robustness append (sleep 10; echo ROBUST_DONE)
+  # (see appendix/robustness.txt for the exact timestamps and observed output)

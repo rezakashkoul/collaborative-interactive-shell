@@ -1,0 +1,20 @@
+Latency experiment summary (echo marker) [units: milliseconds (ms)]
+socket: ./cis.sock
+trials per N: 50
+timeout per trial: 2.0s
+generated_at_utc: 2026-02-12T05:50:19.903166+00:00
+
+NOTE: All latency values below are in milliseconds (ms). 1000 ms = 1 s.
+
+N_obs=1
+  controller: count=50 min=0.070 med=0.098 mean=0.114 p95=0.135 max=0.819
+  observers : count=50 min=0.079 med=0.114 mean=0.129 p95=0.151 max=0.849
+
+N_obs=2
+  controller: count=50 min=0.058 med=0.075 mean=26.053 p95=0.125 max=1298.418
+  observers : count=100 min=0.065 med=0.094 mean=26.071 p95=0.147 max=1298.474
+
+N_obs=4
+  controller: count=50 min=0.126 med=0.139 mean=0.152 p95=0.164 max=0.528
+  observers : count=200 min=0.137 med=0.186 mean=0.192 p95=0.224 max=0.597
+
