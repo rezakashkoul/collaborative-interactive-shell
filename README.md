@@ -227,14 +227,6 @@ This repository includes documentation and evidence across both phases, includin
 
 ---
 
-## Notes
-
-- ZIP archives are intentionally excluded from this repository.
-- Generated PowerPoint files are intentionally excluded from this repository.
-- The repository keeps both Phase 1 and Phase 2 artifacts for continuity between design and implementation.
-
----
-
 ## Summary
 
 Collaborative Interactive Shell (CIS) is a systems-oriented project that combines interactive shell execution, PTY-based terminal behavior, multi-client coordination, floor-control policy, fairness enforcement, disconnect handling, resize handling, cleanup, and documentation.
